@@ -1,0 +1,48 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    list-style: none;
+    border-radius: 5px;
+}
+h1{
+    margin: 20px 0 10px;
+    text-align: center;
+}
+#wrapper,#list-wrapper{
+    border: 3px double gray;
+    width: 30%;
+    margin: 20px auto 0 auto;
+    padding: 20px;
+}
+#wrapper{
+    display: flex;
+    height: 14vh;
+    justify-content: space-between;
+    padding-top: 30px;
+}
+#setNames{
+    height: 30px;
+    width: 60%;
+    padding-left: 5px;
+}
+#setButton{
+    width: 30%;
+    border: 1px solid black;
+    height: 30px;
+    cursor: pointer;
+    text-align: center;
+    padding-top: 5px;
+}
+li{
+    display: flex;
+    justify-content: space-between;
+}
+.closingBtn{
+    color: cadetblue;
+    cursor: pointer;
+}
+#list-wrapper{
+   height: 40vh; 
+}
