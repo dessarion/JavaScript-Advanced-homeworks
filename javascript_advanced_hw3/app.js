@@ -1,5 +1,4 @@
 window.onload = function () {
-    const testSt = '1.2+sqrt336.99(cos59.999-9^3)*3-sqrt9.0001(9.8/8789(8-sqrt49.66)^2-cos0.0105)*sin(5.5-sin9.9)';
 
     const DOMstructure = (function () {
 
@@ -67,7 +66,11 @@ window.onload = function () {
                             currentDisplay('sqrt');
                             break;
                         case 8:
-                            console.log(StringUnparser.parse(displayInput.value));
+                            let display = StringUnparser.parse(displayInput.value);
+                            Calculation.pCalc(display);
+                            Calculation.priorities(display);
+                            let result = Result.calc(display);
+                            displayInput.value = Result.equality(result);
                             break;
                     };
                 });
@@ -191,7 +194,7 @@ window.onload = function () {
             const arr = Parser.separateDights(string);
             Parser.tokenization(arr);
             Parser.parser(arr);
-            Parser.preparator(arr)
+            Parser.preparator(arr);
             return arr;
         };
         return {
@@ -206,7 +209,10 @@ window.onload = function () {
             { command: '-', priority: 1, },
             { command: '*', priority: 2, },
             { command: '/', priority: 2, },
-            { command: '^', priority: 3, },           
+            { command: '^', priority: 3, },
+            { command: 'sq', priority: 1, },
+            { command: 's', priority: 1, },
+            { command: 'c', priority: 1, },
         ];
 
         function preCalculate(arr) {
@@ -256,13 +262,22 @@ window.onload = function () {
                     case '^':
                         arr[i] = commandPriority[4]
                         break;
+                    case 'sq':
+                        arr[i] = commandPriority[5]
+                        break;
+                    case 's':
+                        arr[i] = commandPriority[6]
+                        break;
+                    case 'c':
+                        arr[i] = commandPriority[7]
+                        break;
                     default:
                         arr[i] = arr[i]
                         break;
                 };
             };
             return arr
-        }
+        };
 
         return {
             pCalc: preCalculate,
@@ -271,16 +286,107 @@ window.onload = function () {
 
     })();
 
-   /**
-    * Невиходить реалізувати зворотне польске сортування для розпарсеної стрічки =(
-    */
+    const Result = (function () {
 
+        function calculate(arr) {
 
-    let ar = StringUnparser.parse(testSt);
-    console.log(ar);
+            const pushOutArr = [];
+            const commands = [];
+            let temp;
 
-    console.log(Calculation.pCalc(ar));
-    console.log(Calculation.priorities(ar));
+            const mixinType = function () {
+                temp = commands.pop();
+                pushOutArr.push(temp);
+                temp = undefined;
+            };
+
+            for (let i = 0; i < arr.length; i++) {
+                            
+                if (!isNaN(arr[i])) {
+                    pushOutArr.push(arr[i]);
+                } else if ((commands.length === 0) || (arr[i] === '(') || (commands[commands.length - 1] === '(')) {
+                    commands.push(arr[i])
+                } else if ((arr[i].priority === commands[commands.length - 1].priority)) {
+                    mixinType();
+                    commands.push(arr[i]);
+                } else if (arr[i] === ')') {
+                    for (let i = commands.length; commands[i - 1] !== '('; i--) {
+                        mixinType();
+                    }
+                    commands.splice(commands.length - 1, 1)
+                } else if ((arr[i].priority > commands[commands.length - 1].priority)) {
+                    commands.push(arr[i]);
+                } else if ((arr[i].priority < commands[commands.length - 1].priority)) {
+                    mixinType();
+                    commands.push(arr[i]);
+                }
+            }
+            for (let i = commands.length; i > 0; i--) {
+                mixinType();
+            }
+            return pushOutArr;
+        };
+
+        function equality(arr) {
+
+            const dightsStack = [];
+            let temp;
+            let dight1;
+            let dight2;
+
+            const mixinTypeEq = function (command) {
+                dight2 = dightsStack.pop();
+                switch (command.command) {
+                    case '+':
+                        dight1 = dightsStack.pop();
+                        temp = dight1 + dight2;
+                        break;
+                    case '-':
+                        dight1 = dightsStack.pop();
+                        temp = dight1 - dight2;
+                        break;
+                    case '*':
+                        dight1 = dightsStack.pop();
+                        temp = dight1 * dight2;
+                        break;
+                    case '/':
+                        dight1 = dightsStack.pop();
+                        temp = dight1 / dight2;
+                        break;
+                    case '^':
+                        dight1 = dightsStack.pop();
+                        temp = Math.pow(dight1, dight2);
+                        break;
+                    case 'sq':
+                        temp = Math.sqrt(dight2)
+                        break;
+                    case 's':
+                        temp = Math.sin(dight2)
+                        break;
+                    case 'c':
+                        temp = Math.cos(dight2)
+                        break;
+                };
+                dightsStack.push(temp);
+                temp = undefined;
+            }
+
+            for (let i = 0; i < arr.length; i++) {
+                if (!isNaN(arr[i])) {
+                    dightsStack.push(arr[i]);
+                } else if (arr[i].command) {
+                    mixinTypeEq(arr[i]);
+                }
+            }
+            return dightsStack;
+        }
+
+        return {
+            calc: calculate,
+            equality: equality
+        }
+
+    })();
 
     DOMstructure.dightsPanel();
     DOMstructure.controlPanel();
