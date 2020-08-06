@@ -1,0 +1,56 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+h1{
+    text-align: center;
+}
+
+span{
+    cursor: pointer;
+    color: brown;
+    /* outline: none; */
+    width: 0
+}
+
+span:hover{
+    text-shadow: 1px 2px 3px #000;
+}
+
+span:active{
+    text-shadow: none;
+}
+
+.init{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    width: 50%;    
+    margin: 0 auto;
+}
+
+.cluster{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-left: 1px dashed black;
+    position: relative;
+    left: 25px;
+}
+
+.name{    
+    display: flex;
+    left: 20px;    
+    padding: 3px 0 3px 10px;
+}
+
+.name a{
+    margin-left: 20px;
+}
+
+.hidden{
+    display: none;
+}
